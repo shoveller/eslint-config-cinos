@@ -10,7 +10,10 @@
     "eslint-plugin-react": ">=7.28.0",
     "eslint-plugin-unused-imports": ">=2.0.0"
   },
-  "keywords": ["eslint", "typescript"],
+  "keywords": [
+    "eslint",
+    "typescript"
+  ],
   "author": "cinos81@gmail.com",
   "license": "ISC"
 }
