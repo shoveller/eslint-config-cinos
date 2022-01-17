@@ -17,12 +17,18 @@
   "author": "cinos81@gmail.com",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.16.7",
+    "@babel/preset-env": "^7.16.8",
+    "@types/jest": "^27.4.0",
     "@types/node": "^17.0.9",
     "@types/prettier": "^2.4.3",
     "@types/semver": "^7.3.9",
+    "babel-jest": "^27.4.6",
+    "jest": "^27.4.7",
     "prettier": "^2.5.1",
     "prettier-config-cinos": "^1.0.0",
     "semver": "^7.3.5"
   },
-  "prettier": "prettier-config-cinos"
+  "prettier": "prettier-config-cinos",
+  "developmentVersion": "0.1.0"
 }
