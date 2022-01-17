@@ -21,6 +21,8 @@
     "@types/prettier": "^2.4.3",
     "@types/semver": "^7.3.9",
     "prettier": "^2.5.1",
+    "prettier-config-cinos": "^1.0.0",
     "semver": "^7.3.5"
-  }
+  },
+  "prettier": "prettier-config-cinos"
 }
