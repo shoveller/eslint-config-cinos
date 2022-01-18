@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "description": "서재원 전용 eslint 룰",
   "main": "index.js",
+  "type": "module",
   "peerDependencies": {
     "@typescript-eslint/parser": ">=5.8.1",
     "eslint": ">=8.6.0",
@@ -30,5 +31,5 @@
     "semver": "^7.3.5"
   },
   "prettier": "prettier-config-cinos",
-  "developmentVersion": "0.1.0"
+  "developmentVersion": "2.1.0"
 }
