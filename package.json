@@ -1,27 +1,29 @@
 {
   "name": "eslint-config-cinos",
-  "version": "2.0.1",
+  "version": "0.0.0",
   "description": "서재원 전용 eslint 룰",
   "main": "index.js",
-  "type": "module",
-  "peerDependencies": {
-    "@typescript-eslint/parser": ">=5.8.1",
-    "eslint": ">=8.6.0",
-    "eslint-plugin-functional": ">=4.0.2",
-    "eslint-plugin-react": ">=7.28.0",
-    "eslint-plugin-unused-imports": ">=2.0.0"
-  },
   "keywords": [
     "eslint",
     "typescript"
   ],
   "author": "cinos81@gmail.com",
   "license": "ISC",
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.10.0",
+    "eslint-plugin-functional": "^4.0.2",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jsdoc": "^37.6.3",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-typescript": "^0.14.0",
+    "eslint-plugin-unused-imports": "^2.0.0"
+  },
   "devDependencies": {
-    "@babel/core": "^7.16.7",
-    "@babel/preset-env": "^7.16.8",
+    "@babel/core": "^7.16.10",
+    "@babel/preset-env": "^7.16.11",
+    "@types/eslint": "^8.4.0",
     "@types/jest": "^27.4.0",
-    "@types/node": "^17.0.9",
+    "@types/node": "^17.0.10",
     "@types/prettier": "^2.4.3",
     "@types/semver": "^7.3.9",
     "babel-jest": "^27.4.6",
@@ -30,6 +32,14 @@
     "prettier-config-cinos": "^1.0.0",
     "semver": "^7.3.5"
   },
+  "peerDependencies": {
+    "@typescript-eslint/parser": ">=5.8.1",
+    "eslint": ">=8.6.0"
+  },
   "prettier": "prettier-config-cinos",
-  "developmentVersion": "2.1.0"
+  "developmentVersion": "0.1.0",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint --cache --fix . --ext .js,.json"
+  }
 }

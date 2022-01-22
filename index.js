@@ -1,3 +1,11 @@
+/**
+ * @typedef {import('eslint').Linter.RulesRecord} Rules
+ */
+
+/**
+ *
+ * @type {Rules}
+ */
 const functionalRules = {
   // let은 사용할 수 없다
   'functional/no-let': ['error'],
@@ -16,6 +24,10 @@ const functionalRules = {
   ],
 }
 
+/**
+ *
+ * @type {Rules}
+ */
 const eslintRules = {
   // var는 사용할 수 없다
   'no-var': ['error'],
@@ -121,6 +133,10 @@ const eslintRules = {
   'prefer-template': ['error'],
 }
 
+/**
+ *
+ * @type {Rules}
+ */
 const tslintRules = {
   // 명시적으로 any를 사용할 수 없다
   '@typescript-eslint/no-explicit-any': ['error'],
@@ -141,6 +157,10 @@ const tslintRules = {
   '@typescript-eslint/no-use-before-define': ['error'],
 }
 
+/**
+ *
+ * @type {Rules}
+ */
 const reactHookRules = {
   // hook은 반드시 react 함수 안에서 호출해야 한다
   'react-hooks/rules-of-hooks': ['error'], // Checks rules of Hooks
@@ -148,6 +168,10 @@ const reactHookRules = {
   'react-hooks/exhaustive-deps': ['error'], // Checks effect dependencies
 }
 
+/**
+ *
+ * @type {Rules}
+ */
 const reactRules = {
   // boolean 값을 props로 넘길 때는 우변을 생략한다
   'react/jsx-boolean-value': ['error'],
@@ -181,6 +205,10 @@ const reactRules = {
   'react/no-string-refs': ['error'],
 }
 
+/**
+ *
+ * @type {Rules}
+ */
 const unusedImportRules = {
   // 사용하지 않는 import 구문은 삭제한다
   'unused-imports/no-unused-imports': ['error'],
@@ -188,6 +216,10 @@ const unusedImportRules = {
   'unused-imports/no-unused-vars': ['error'],
 }
 
+/**
+ *
+ * @type {Rules}
+ */
 const importRules = {
   // 스스로를 import 할 수 없다
   'import/no-self-import': ['error'],
@@ -217,6 +249,63 @@ const importRules = {
   'import/no-useless-path-segments': ['error'],
 }
 
+/**.
+ * Eslint-plugin-jsdoc의 룰 모음
+ *
+ * @type {Rules}
+ */
+const jsdocRules = {
+  'jsdoc/check-alignment': ['error'],
+  'jsdoc/check-indentation': ['error'],
+  'jsdoc/check-line-alignment': ['error'],
+  'jsdoc/check-param-names': ['error'],
+  'jsdoc/check-property-names': ['error'],
+  'jsdoc/check-syntax': ['error'],
+  'jsdoc/check-tag-names': ['error'],
+  'jsdoc/check-types': ['error'],
+  'jsdoc/check-values': ['error'],
+  'jsdoc/empty-tags': ['error'],
+  'jsdoc/implements-on-classes': ['error'],
+  'jsdoc/match-description': ['warn'],
+  'jsdoc/multiline-blocks': ['error'],
+  'jsdoc/newline-after-description': ['error'],
+  'jsdoc/no-bad-blocks': ['warn'],
+  'jsdoc/no-defaults': ['warn'],
+  'jsdoc/no-missing-syntax': ['off'],
+  'jsdoc/no-multi-asterisks': ['error'],
+  'jsdoc/no-restricted-syntax': ['warn'],
+  'jsdoc/no-types': ['warn'],
+  'jsdoc/no-undefined-types': ['error'],
+  'jsdoc/require-asterisk-prefix': ['warn'],
+  'jsdoc/require-description': ['warn'],
+  'jsdoc/require-description-complete-sentence': ['warn'],
+  'jsdoc/require-example': ['warn'],
+  'jsdoc/require-file-overview': ['off'],
+  'jsdoc/require-hyphen-before-param-description': ['warn'],
+  'jsdoc/require-jsdoc': ['error'],
+  'jsdoc/require-param': ['error'],
+  'jsdoc/require-param-description': ['error'],
+  'jsdoc/require-param-name': ['error'],
+  'jsdoc/require-param-type': ['error'],
+  'jsdoc/require-property': ['error'],
+  'jsdoc/require-property-description': ['error'],
+  'jsdoc/require-property-name': ['error'],
+  'jsdoc/require-property-type': ['error'],
+  'jsdoc/require-returns': ['error'],
+  'jsdoc/require-returns-check': ['error'],
+  'jsdoc/require-returns-description': ['error'],
+  'jsdoc/require-returns-type': ['error'],
+  'jsdoc/require-throws': ['warn'],
+  'jsdoc/require-yields': ['error'],
+  'jsdoc/require-yields-check': ['error'],
+  'jsdoc/tag-lines': ['error'],
+  'jsdoc/valid-types': ['error'],
+}
+
+/**
+ * @typedef {import('eslint').Linter.Config} Config
+ * @type {Config}
+ */
 module.exports = {
   // eslint 파서를 지정
   parser: '@typescript-eslint/parser',
@@ -229,11 +318,12 @@ module.exports = {
   ],
   // 플러그인 목록
   plugins: [
-    '@typescript-eslint',
+    '@typescript-eslint/eslint-plugin',
     'functional',
     'react',
     'unused-imports',
-    'import',
+    'eslint-plugin-import',
+    'jsdoc',
   ],
   // 허용하는 전역 변수 목록을 명시한다
   // https://eslint.org/docs/user-guide/configuring/language-options#specifying-environments
@@ -254,6 +344,12 @@ module.exports = {
         ...unusedImportRules,
         ...reactRules,
         ...reactHookRules,
+      },
+    },
+    {
+      files: ['**/*.js?(x)', '**/*.mjs', '**/*.cjs'],
+      rules: {
+        ...jsdocRules,
       },
     },
   ],
