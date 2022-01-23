@@ -3,17 +3,46 @@
  */
 /* @type {import('node')}*/
 import { execSync } from 'child_process'
+import fs from 'fs'
 /* @type {import('semver')}*/
 import semver from 'semver'
-import fs from 'fs'
 
 /**
  * 프로젝트 루트의 package.json을 역직렬화
  * @returns {any}
  */
-export const getPackageJSON = () => {
+export const readPackageJSON = () => {
   const packageJSON = fs.readFileSync('./package.json', 'utf-8')
+
   return JSON.parse(packageJSON)
+}
+
+export const setVersion = (packageJSON, originalVersion) => {
+  fs.writeFileSync(
+    'package.json',
+    JSON.stringify(
+      {
+        ...packageJSON,
+        version: originalVersion,
+      },
+      null,
+      2,
+    ),
+  )
+}
+
+export const setDevelopmentVersion = (packageJSON, newVersion) => {
+  fs.writeFileSync(
+    'package.json',
+    JSON.stringify(
+      {
+        ...packageJSON,
+        developmentVersion: newVersion,
+      },
+      null,
+      2,
+    ),
+  )
 }
 
 /**
@@ -21,54 +50,67 @@ export const getPackageJSON = () => {
  * @param originalVersion {string} package.json의 newVersion 프로퍼티
  * @param newVersion {string} package.json의 developmentVersion 프로퍼티
  */
-export const rollbackPackageJSONVersions = (originalVersion, newVersion) => {
+export const setPackageJSONVersions = (originalVersion, newVersion) => {
   packageJSON.version = originalVersion
   packageJSON.developmentVersion = newVersion
   fs.writeFileSync('package.json', JSON.stringify(packageJSON, null, 2))
 }
 
-const packageJSON = getPackageJSON()
-const originalVersion = `${packageJSON.version}`
+const packageJSON = readPackageJSON()
+export const originalVersion = `${packageJSON.version}`
 
 /**
- * package.json의 마이너 버전을 업데이트한다
+ * 새 버전을 계산한다
+ * 개발 모드일때는 developmentVersion 필드의 마이너 버전을 늘린 값을 반환한다
+ * 그 외에는 version 필드의 마이너 버전을 늘린 값을 반환한다
  * @type {string}
  */
-const version = semver.inc(
-  process.env.NODE_ENV === 'development'
-    ? packageJSON.developmentVersion
-    : packageJSON.version,
-  'minor',
-)
+export const getNewVersion = (isDev = true) =>
+  semver.inc(
+    isDev ? packageJSON.developmentVersion : packageJSON.version,
+    'minor',
+  )
 
 /**
  * 개발 모드에서는 강제로 publish 한다
  * @type {string}
  */
-const force = process.env.NODE_ENV === 'development' ? '--force' : ''
+const getForceFlag = (isDev = true) => (isDev ? '--force' : '')
 
-const registry =
-  process.env.NODE_ENV === 'development'
-    ? '--registry http://localhost:4873'
-    : ''
+const getRegistry = (isDev = true) =>
+  isDev ? '--registry http://localhost:4873' : ''
 
+export const versionUp = (isDev = true) => {
+  const newVersion = getNewVersion(isDev)
+  const registry = getRegistry(isDev)
+
+  execSync(`npm version ${newVersion} --allow-same-version ${registry}`)
+}
+
+export const publish = (isDev = true) => {
+  const registry = getRegistry(isDev)
+  const forceFlag = getForceFlag(isDev)
+
+  execSync(`npm publish --access public ${forceFlag} ${registry}`)
+}
+
+export const versionRollback = (isDev = true) => {
+  const newVersion = getNewVersion(isDev)
+
+  setPackageJSONVersions(originalVersion, newVersion)
+}
+
+const isDev = process.env.NODE_ENV === 'development'
 try {
-  /**
-   * 배포한다
-   */
-  execSync(
-    `npm version ${version} --allow-same-version ${registry} && npm publish --access public ${force} ${registry}`,
-  )
+  versionUp(isDev)
+  publish(isDev)
 } catch (exception) {
-  /**
-   * 예외가 발생하면 버전을 롤백한다
-   */
-  rollbackPackageJSONVersions(originalVersion, version)
+  versionRollback(isDev)
 }
 
 /**
  * 개발모드로 배포했다면 버전을 롤백한다
  */
-if (process.env.NODE_ENV === 'development') {
-  rollbackPackageJSONVersions(originalVersion, version)
+if (isDev) {
+  versionRollback(isDev)
 }
