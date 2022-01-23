@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-cinos",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "서재원 전용 eslint 룰",
   "main": "index.js",
   "keywords": [
@@ -37,9 +37,9 @@
     "eslint": ">=8.6.0"
   },
   "prettier": "prettier-config-cinos",
-  "developmentVersion": "0.1.0",
   "scripts": {
     "test": "jest",
     "lint": "eslint --cache --fix . --ext .js,.json"
-  }
+  },
+  "developmentVersion": "0.1.0"
 }
