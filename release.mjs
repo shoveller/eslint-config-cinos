@@ -2,115 +2,125 @@
  * https://cheatcode.co/tutorials/how-to-write-test-and-publish-an-npm-package#writing-a-release-script
  */
 /* @type {import('node')}*/
-import { execSync } from 'child_process'
+import {execSync} from 'child_process'
 import fs from 'fs'
 /* @type {import('semver')}*/
 import semver from 'semver'
 
-/**
- * 프로젝트 루트의 package.json을 역직렬화
- * @returns {any}
- */
-export const readPackageJSON = () => {
-  const packageJSON = fs.readFileSync('./package.json', 'utf-8')
+export const getPackageJSON = () => {
+  const result = fs.readFileSync(packageJSONPath, 'utf-8')
 
-  return JSON.parse(packageJSON)
-}
-
-export const setVersion = (packageJSON, originalVersion) => {
-  fs.writeFileSync(
-    'package.json',
-    JSON.stringify(
-      {
-        ...packageJSON,
-        version: originalVersion,
-      },
-      null,
-      2,
-    ),
-  )
-}
-
-export const setDevelopmentVersion = (packageJSON, newVersion) => {
-  fs.writeFileSync(
-    'package.json',
-    JSON.stringify(
-      {
-        ...packageJSON,
-        developmentVersion: newVersion,
-      },
-      null,
-      2,
-    ),
-  )
+  return JSON.parse(result)
 }
 
 /**
- * package.json의 newVersion, developmentVersion 프로퍼티를 롤백한다
- * @param originalVersion {string} package.json의 newVersion 프로퍼티
- * @param newVersion {string} package.json의 developmentVersion 프로퍼티
+ *
+ * @param {Object} content
  */
-export const setPackageJSONVersions = (originalVersion, newVersion) => {
-  packageJSON.version = originalVersion
-  packageJSON.developmentVersion = newVersion
-  fs.writeFileSync('package.json', JSON.stringify(packageJSON, null, 2))
+export const setPackageJSON = (content) => {
+  fs.writeFileSync(packageJSONPath, JSON.stringify(content, null, 2))
 }
 
-const packageJSON = readPackageJSON()
-export const originalVersion = `${packageJSON.version}`
+export const packageJSONPath = './package.json'
+
+export const isDev = process.env.NODE_ENV === 'development'
+
+export const getOriginalVersion = () => {
+  const packageJSON = getPackageJSON()
+
+  return `${packageJSON.version}`
+}
 
 /**
  * 새 버전을 계산한다
  * 개발 모드일때는 developmentVersion 필드의 마이너 버전을 늘린 값을 반환한다
  * 그 외에는 version 필드의 마이너 버전을 늘린 값을 반환한다
- * @type {string}
+ * @returns {string}
  */
-export const getNewVersion = (isDev = true) =>
-  semver.inc(
-    isDev ? packageJSON.developmentVersion : packageJSON.version,
-    'minor',
-  )
+export const getNewVersion = () => {
+  const { developmentVersion = '', version = '' } = getPackageJSON()
+  if (isDev) {
+    return semver.inc(developmentVersion,'minor');
+  }
+
+  return semver.inc(version,'minor');
+}
 
 /**
  * 개발 모드에서는 강제로 publish 한다
- * @type {string}
  */
-const getForceFlag = (isDev = true) => (isDev ? '--force' : '')
+const getForceFlag = () => isDev ? '--force' : ''
 
-const getRegistry = (isDev = true) =>
-  isDev ? '--registry http://localhost:4873' : ''
+/**
+ *
+ * @returns {string}
+ */
+const getRegistry = () => {
+  if (isDev) {
+    return '--registry http://localhost:4873'
+  }
 
-export const versionUp = (isDev = true) => {
-  const newVersion = getNewVersion(isDev)
-  const registry = getRegistry(isDev)
-
-  execSync(`npm version ${newVersion} --allow-same-version ${registry}`)
-}
-
-export const publish = (isDev = true) => {
-  const registry = getRegistry(isDev)
-  const forceFlag = getForceFlag(isDev)
-
-  execSync(`npm publish --access public ${forceFlag} ${registry}`)
-}
-
-export const versionRollback = (isDev = true) => {
-  const newVersion = getNewVersion(isDev)
-
-  setPackageJSONVersions(originalVersion, newVersion)
-}
-
-const isDev = process.env.NODE_ENV === 'development'
-try {
-  versionUp(isDev)
-  publish(isDev)
-} catch (exception) {
-  versionRollback(isDev)
+  return '';
 }
 
 /**
- * 개발모드로 배포했다면 버전을 롤백한다
+ *
+ * @return {string}
+ */
+export const getVersionUpCmd = () => {
+  const newVersion = getNewVersion()
+  const registry = getRegistry()
+
+  return `npm version ${newVersion} --allow-same-version ${registry}`
+}
+
+/**
+ *
+ * @return {string}
+ */
+export const getPublishCmd = () => {
+  const registry = getRegistry()
+  const forceFlag = getForceFlag()
+
+  return `npm publish --access public ${forceFlag} ${registry}`
+}
+
+/**
+ *
+ * @returns {`${string} && ${string}`}
+ */
+export const getCommand = () => {
+  const versionUpCmd = getVersionUpCmd()
+  const publishCmd = getPublishCmd()
+
+  return `${versionUpCmd} && ${publishCmd}`
+}
+
+export const versionUp = () => {
+  execSync(getCommand())
+}
+
+export const versionRollback = () => {
+  const newVersion = getNewVersion()
+  const originalVersion = getOriginalVersion()
+
+  const packageJSON = getPackageJSON()
+  setPackageJSON({
+    ...packageJSON,
+    version: originalVersion,
+    developmentVersion: newVersion,
+  })
+}
+
+try {
+  versionUp()
+} catch (exception) {
+  versionRollback()
+}
+
+/**
+ * 개발모드로 배포했다면, 배포가 성공하더라도 버전을 롤백한다
  */
 if (isDev) {
-  versionRollback(isDev)
+  versionRollback()
 }
