@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-cinos",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "서재원 전용 eslint 룰",
   "main": "index.js",
   "keywords": [
