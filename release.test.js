@@ -48,7 +48,7 @@ describe('getCommand()', () => {
       `"/Users/cinos81/Study/eslint-config-cinos/package.json"`,
     )
     expect(getCommand()).toMatchInlineSnapshot(
-      `"npm version 0.3.0 --allow-same-version --registry http://localhost:4873 && npm publish --access public --force --registry http://localhost:4873"`,
+      `"npm version 0.4.0 --allow-same-version --registry http://localhost:4873 && npm publish --access public --force --registry http://localhost:4873"`,
     )
   })
 
@@ -58,7 +58,7 @@ describe('getCommand()', () => {
       `"/Users/cinos81/Study/eslint-config-cinos/package.json"`,
     )
     expect(getCommand()).toMatchInlineSnapshot(
-      `"npm version 0.2.0 --allow-same-version  && npm publish --access public  "`,
+      `"npm version 0.3.0 --allow-same-version  && npm publish --access public  "`,
     )
   })
 })
