@@ -1,17 +1,21 @@
-import { getPackageJSON, packageJSONPath } from './release'
+import {getPackageJSON} from './release'
 
-test('packageJSONPath 프로퍼티는 package.json의 위치를 반환한다', () => {
-  expect(packageJSONPath).toMatchInlineSnapshot(
-    `"/Users/cinos81/Study/eslint-config-cinos/__mocks__/package.json"`,
-  )
+describe('release 모듈', (object, method) => {
+  beforeEach(() => {
+    process.env.PKGJSON =
+      '/Users/cinos81/Study/eslint-config-cinos/__mocks__/package.json'
+  })
+
+  afterAll(() => {
+    process.env.PKGJSON = undefined
+  })
+
+  test('packageJSONPath 함수는 package.json의 위치를 반환한다', () => {
+    expect(getPackageJSON()).toMatchInlineSnapshot(`
+      Object {
+        "developmentVersion": "0.1.0",
+        "version": "0.0.1",
+      }
+    `)
+  })
 })
-
-test('getPackageJSON 함수는 package.json을 읽어들인다', () => {
-  expect(getPackageJSON()).toMatchInlineSnapshot(`
-    Object {
-      "developmentVersion": "0.0.1",
-      "version": "0.0.1",
-    }
-  `)
-})
-

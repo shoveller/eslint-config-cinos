@@ -8,18 +8,18 @@ import fs from 'fs'
 import semver from 'semver'
 
 export const getPackageJSON = () => {
-  const result = fs.readFileSync(packageJSONPath, 'utf-8')
+  const result = fs.readFileSync(getPackageJSONPath(), 'utf-8')
 
   return JSON.parse(result)
 }
 
 export const setPackageJSON = (content) => {
-  fs.writeFileSync(packageJSONPath, JSON.stringify(content, null, 2))
+  fs.writeFileSync(getPackageJSONPath(), JSON.stringify(content, null, 2))
 }
 
-export const packageJSONPath =  `${__dirname}/package.json`
+export const getPackageJSONPath = () => process.env.PKGJSON || `${__dirname}/package.json`
 
-export const isDev = process.env.NODE_ENV === 'development'
+export const isDevEnv = () => process.env.NODE_ENV === 'development'
 
 export const getOriginalVersion = () => {
   const packageJSON = getPackageJSON()
@@ -29,17 +29,17 @@ export const getOriginalVersion = () => {
 
 export const getNewVersion = () => {
   const { developmentVersion = '', version = '' } = getPackageJSON()
-  if (isDev) {
+  if (isDevEnv()) {
     return semver.inc(developmentVersion,'minor');
   }
 
   return semver.inc(version,'minor');
 }
 
-const getForceFlag = () => isDev ? '--force' : ''
+const getForceFlag = () => isDevEnv() ? '--force' : ''
 
 const getRegistry = () => {
-  if (isDev) {
+  if (isDevEnv()) {
     return '--registry http://localhost:4873'
   }
 
@@ -92,6 +92,6 @@ try {
 /**
  * 개발모드로 배포했다면, 배포가 성공하더라도 버전을 롤백한다.
  */
-if (isDev) {
+if (isDevEnv()) {
   versionRollback()
 }
